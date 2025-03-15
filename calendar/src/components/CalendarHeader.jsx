@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { format } from "date-fns";
 import EventModal from "./EventModal";
 
-const CalendarHeader = ({ currentDate, onPrevMonth, onNextMonth }) => {
+const CalendarHeader = ({ currentDate, onPrevMonth, onNextMonth, onAddEvent }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -48,7 +48,7 @@ const CalendarHeader = ({ currentDate, onPrevMonth, onNextMonth }) => {
       </div>
 
       {/* 彈出視窗 */}
-      {isModalOpen && <EventModal onClose={() => setIsModalOpen(false)} />}
+      {isModalOpen && <EventModal onClose={() => setIsModalOpen(false)} onAddEvent={onAddEvent} />}
     </>
   );
 };

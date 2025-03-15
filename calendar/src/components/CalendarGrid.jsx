@@ -4,7 +4,7 @@ import CalendarCell from "./CalendarCell";
 
 const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const CalendarGrid = ({ year, month }) => {
+const CalendarGrid = ({ year, month, events }) => {
   const days = getMonthDays(year, month);
   const currentMonth = new Date(year, month).getMonth();
 
@@ -29,13 +29,13 @@ const CalendarGrid = ({ year, month }) => {
       </div>
 
       {/* 日期區域（確保總是 6 行） */}
-      <div className="grid grid-cols-7 grid-rows-6 w-full h-full flex-grow">
+      <div className="grid grid-cols-7 grid-rows-6 w-full h-full flex-grow box-border">
         {totalDays.map((day, index) => {
           // **讓 5 或 6 行的空白格子無框線**
           const isHiddenRow = (totalRows === 4 && index >= 28) || (totalRows === 5 && index >= 35);
 
           return day ? (
-            <CalendarCell key={index} date={day} isCurrentMonth={day.getMonth() === currentMonth} />
+            <CalendarCell key={index} date={day} isCurrentMonth={day.getMonth() === currentMonth} events={events} />
           ) : (
             <div
               key={index}

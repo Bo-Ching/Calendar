@@ -1,14 +1,31 @@
 import React, { useState } from 'react';
 
-const EventModal = ({ onClose }) => {
+const EventModal = ({ onClose, onAddEvent }) => {
     const [eventName, setEventName] = useState("");
     const [eventDescription, setEventDescription] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const [error, setError] = useState(""); // **新增錯誤訊息狀態**
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        // **檢查結束日期是否比開始日期早**
+        if (new Date(endDate) < new Date(startDate)) {
+            setError("End date must be later than start date.");
+            return;
+        }
+
         console.log({
+            eventName,
+            eventDescription,
+            startDate,
+            endDate,
+        });
+
+        if (!eventName || !startDate || !endDate) return;
+
+        onAddEvent({
             eventName,
             eventDescription,
             startDate,
@@ -20,6 +37,7 @@ const EventModal = ({ onClose }) => {
         setEventDescription("");
         setStartDate("");
         setEndDate("");
+        setError(""); // **清空錯誤訊息**
 
         // 關閉視窗
         onClose();
@@ -29,6 +47,9 @@ const EventModal = ({ onClose }) => {
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-gray-100/30 pointer-events-none z-50">
             <div className="bg-white p-6 w-96 rounded-lg shadow-lg pointer-events-auto">
                 <h2 className="text-xl font-semibold mb-4">New Event</h2>
+
+                {/* **顯示錯誤訊息** */}
+                {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* 事件名稱 */}
