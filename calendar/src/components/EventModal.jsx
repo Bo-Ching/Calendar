@@ -5,7 +5,11 @@ const EventModal = ({ onClose, onAddEvent }) => {
     const [eventDescription, setEventDescription] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
-    const [error, setError] = useState(""); // **新增錯誤訊息狀態**
+    const [color, setColor] = useState("#3B82F6"); // **預設藍色**
+    const [error, setError] = useState("");
+
+    // **6 種可選顏色**
+    const colors = ["#3B82F6", "#EF4444", "#F59E0B", "#10B981", "#8B5CF6", "#EC4899"];
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -16,13 +20,6 @@ const EventModal = ({ onClose, onAddEvent }) => {
             return;
         }
 
-        console.log({
-            eventName,
-            eventDescription,
-            startDate,
-            endDate,
-        });
-
         if (!eventName || !startDate || !endDate) return;
 
         onAddEvent({
@@ -30,16 +27,18 @@ const EventModal = ({ onClose, onAddEvent }) => {
             eventDescription,
             startDate,
             endDate,
+            color, // **儲存顏色**
         });
 
-        // 清空表單資料
+        // **清空表單**
         setEventName("");
         setEventDescription("");
         setStartDate("");
         setEndDate("");
-        setError(""); // **清空錯誤訊息**
+        setColor("#3B82F6"); // **重設為藍色**
+        setError("");
 
-        // 關閉視窗
+        // **關閉視窗**
         onClose();
     };
 
@@ -52,6 +51,7 @@ const EventModal = ({ onClose, onAddEvent }) => {
                 {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+
                     {/* 事件名稱 */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Name</label>
@@ -74,6 +74,22 @@ const EventModal = ({ onClose, onAddEvent }) => {
                             rows="3"
                             required
                         ></textarea>
+                    </div>
+
+                    {/* 顏色選擇區塊 */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Select Color</label>
+                        <div className="flex gap-2 mt-1">
+                            {colors.map((c) => (
+                                <button
+                                    key={c}
+                                    type="button"
+                                    className={`w-8 h-8 rounded-full border-2 ${color === c ? "border-black" : "border-transparent"}`}
+                                    style={{ backgroundColor: c }}
+                                    onClick={() => setColor(c)}
+                                ></button>
+                            ))}
+                        </div>
                     </div>
 
                     {/* 開始 & 結束日期 */}

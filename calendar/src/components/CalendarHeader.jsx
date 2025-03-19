@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
 import EventModal from "./EventModal";
+import { IoIosArrowDropleftCircle, IoIosArrowDroprightCircle } from "react-icons/io"; // 引入左右按鈕圖示
+import { FaCirclePlus } from "react-icons/fa6"; // 引入 + 號按鈕
 
 const CalendarHeader = ({ currentDate, onPrevMonth, onNextMonth, onAddEvent }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -11,22 +13,16 @@ const CalendarHeader = ({ currentDate, onPrevMonth, onNextMonth, onAddEvent }) =
         {/* 左右切換按鈕 */}
         <div className="flex gap-2">
           <button
-            onClick={() => {
-              console.log("Prev Month Clicked");
-              onPrevMonth && onPrevMonth(); // 確保函式存在
-            }}
-            className="w-10 h-10 bg-gray-200 text-gray-700 rounded-md flex items-center justify-center border border-gray-400"
+            onClick={onPrevMonth}
+            className="text-black rounded-full p-1 hover:text-gray-500 transition duration-200"
           >
-            ◀
+            <IoIosArrowDropleftCircle size={40} />
           </button>
           <button
-            onClick={() => {
-              console.log("Next Month Clicked");
-              onNextMonth && onNextMonth(); // 確保函式存在
-            }}
-            className="w-10 h-10 bg-gray-200 text-gray-700 rounded-md flex items-center justify-center border border-gray-400"
+            onClick={onNextMonth}
+            className="text-black rounded-full p-1 hover:text-gray-500 transition duration-200"
           >
-            ▶
+            <IoIosArrowDroprightCircle size={40} />
           </button>
         </div>
 
@@ -37,13 +33,10 @@ const CalendarHeader = ({ currentDate, onPrevMonth, onNextMonth, onAddEvent }) =
 
         {/* 右上角 "+" 按鈕 */}
         <button
-          onClick={() => {
-            console.log("Open Modal");
-            setIsModalOpen(true);
-          }}
-          className="w-10 h-10 bg-black text-white rounded-md flex items-center justify-center"
+          onClick={() => setIsModalOpen(true)}
+          className="text-black rounded-full p-1 hover:text-gray-500 transition duration-200"
         >
-          +
+          <FaCirclePlus size={40} />
         </button>
       </div>
 
