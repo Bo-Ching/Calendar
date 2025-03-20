@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const EventModal = ({ onClose, onAddEvent }) => {
+const EventModal = ({ onClose, onAddEvent, eventData }) => {
     const [eventName, setEventName] = useState("");
     const [eventDescription, setEventDescription] = useState("");
     const [startDate, setStartDate] = useState("");
@@ -10,6 +10,16 @@ const EventModal = ({ onClose, onAddEvent }) => {
 
     // **6 種可選顏色**
     const colors = ["#3B82F6", "#EF4444", "#F59E0B", "#10B981", "#8B5CF6", "#EC4899"];
+
+    useEffect(() => {
+        if (eventData) {
+            setEventName(eventData.eventName);
+            setEventDescription(eventData.eventDescription);
+            setStartDate(eventData.startDate);
+            setEndDate(eventData.endDate);
+            setColor(eventData.color || "#3B82F6");
+        }
+    }, [eventData]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
