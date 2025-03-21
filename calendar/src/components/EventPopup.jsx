@@ -3,7 +3,7 @@ import { format, parseISO } from "date-fns";
 import { FiEdit, FiTrash2, FiClock } from "react-icons/fi";
 
 // **使用 forwardRef 讓 `CalendarCell` 可以控制 `Popup` 外部點擊**
-const EventPopup = forwardRef(({ event, position, onClose, onEdit }, ref) => {
+const EventPopup = forwardRef(({ event, position, onClose }, ref) => {
   if (!event) return null;
   console.log("Popup Opened for Event:", event); 
 
@@ -21,7 +21,7 @@ const EventPopup = forwardRef(({ event, position, onClose, onEdit }, ref) => {
     >
       {/* 右上角的 編輯 & 刪除 按鈕 */}
       <div className="flex justify-end space-x-2">
-        <button className="text-gray-500 hover:text-gray-800" onClick={onEdit}>
+        <button className="text-gray-500 hover:text-gray-800">
           <FiEdit size={18} />
         </button>
         <button className="text-red-500 hover:text-red-700">

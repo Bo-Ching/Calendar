@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { format, parseISO, isWithinInterval, isSameDay } from "date-fns";
 import EventPopup from "./EventPopup";
-import EventModal from "./EventModal";
+import EventListPopup from "./EventListPopup";
+
+
 
 const eventGrid = {};
 
-const CalendarCell = ({ date, isCurrentMonth, events, onUpdateEvent }) => {
+const CalendarCell = ({ date, isCurrentMonth, events }) => {
 
   const dateKey = format(date, "yyyy-MM-dd");
 
@@ -19,8 +21,8 @@ const CalendarCell = ({ date, isCurrentMonth, events, onUpdateEvent }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const popupRef = useRef(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [eventToEdit, setEventToEdit] = useState(null);
+  const [showAllEvents, setShowAllEvents] = useState(false);
+  const [listPopupPosition, setListPopupPosition] = useState({ top: 0, left: 0 });
 
 
   useEffect(() => {
@@ -111,45 +113,52 @@ const CalendarCell = ({ date, isCurrentMonth, events, onUpdateEvent }) => {
     setPopupPosition({ top: topPosition, left: leftPosition });
   };
 
+  const handleOthersClick = (e) => {
+    e.stopPropagation();
+    
+
+    const rect = e.target.getBoundingClientRect();
+    console.log("Event list Position:", rect.top, rect.left);
+    let top = rect.top + window.scrollY + 25;
+    let left = rect.left + window.scrollX + rect.width / 2;
+
+    // **確保 `Popup` 不超出畫面**
+    const popupWidth = 260;
+    const margin = 10;
+
+    if (left + popupWidth / 2 > window.innerWidth - margin) {
+      left = window.innerWidth - popupWidth / 2 - margin;
+    }
+    if (left - popupWidth / 2 < margin) {
+      left = popupWidth / 2 + margin;
+    }
+    if (top < margin) {
+      top = rect.bottom + window.scrollY - 10;
+    }
+
+    console.log("list Popup Position:", top, left);
+
+    setListPopupPosition({ top, left });
+    setShowAllEvents(true);
+  };
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (popupRef.current && !popupRef.current.contains(e.target)) {
         setSelectedEvent(null);
+        setShowAllEvents(false);
       }
     };
 
-    if (selectedEvent) {
+    if (selectedEvent || showAllEvents) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [selectedEvent]);
+  }, [selectedEvent, showAllEvents]);
 
-  const handleEditEvent = (event) => {
-    setEventToEdit(event);
-    setIsEditing(true);
-  }
-
-  const handleUpdateEvent = (updatedEvent) => {
-    console.log("🔍 原本的 events：", events);
-    console.log("🔍 events 的型別：", typeof events);
-    console.log("🔍 events 是否為陣列：", Array.isArray(events));
-
-    setEvents(prevEvents => {
-      const newEvents = { ...prevEvents };
-      Object.keys(newEvents).forEach(date => {
-        if (newEvents[date].eventName === updatedEvent.eventName) {
-          newEvents[date] = updatedEvent;
-        }
-      });
-      return newEvents;
-    });
-
-    setIsEditing(false);
-    setSelectedEvent(null);
-  };
   return (
     <div className={`relative border border-gray-300 p-0 h-full flex flex-col justify-start
             ${isCurrentMonth ? "bg-white" : "bg-gray-100 text-gray-400"} box-border`}
@@ -190,7 +199,17 @@ const CalendarCell = ({ date, isCurrentMonth, events, onUpdateEvent }) => {
                 backgroundColor: bgColor,
                 color: "white",
               }}
-              onClick={(e) => handleEventClick(event, e)}
+              onClick={(e) => {
+                if (index === 3) {
+                  if (Array.isArray(event) && event.length === 1) {
+                    handleEventClick(event[0], e);
+                  } else {
+                    handleOthersClick(e);
+                  }
+                } else {
+                  handleEventClick(event, e);
+                }
+              }}
             >
               {displayName}
             </div>
@@ -203,18 +222,17 @@ const CalendarCell = ({ date, isCurrentMonth, events, onUpdateEvent }) => {
           event={selectedEvent}
           position={popupPosition}
           onClose={() => setSelectedEvent(null)} // 點擊 popup 外部時關閉
-          onEdit={() => handleEditEvent(selectedEvent)}
         />
       )}
-
-      {isEditing && (
-        <EventModal
-          onClose={() => setIsEditing(false)}
-          onAddEvent={handleUpdateEvent} // 當作更新事件的方法
-          eventData={eventToEdit} // 🔹傳遞當前選取的事件
+      {showAllEvents && (
+        <EventListPopup
+          ref={popupRef}
+          date={date}
+          events={dayEvents}
+          position={listPopupPosition}
+          onClose={() => setShowAllEvents(false)}
         />
       )}
-
     </div>
   );
 };
